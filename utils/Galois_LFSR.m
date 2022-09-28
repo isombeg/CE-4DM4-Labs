@@ -8,42 +8,41 @@ classdef Galois_LFSR < handle
 
     methods
         function obj = Galois_LFSR(feedback_polynomial, init_state)
-            obj.feedback_polymomial = feedback_polynomial
-            obj.state = init_state
-            obj.cap = size(init_state,2)
+            obj.feedback_polymomial = feedback_polynomial;
+            obj.state = init_state;
+            obj.cap = size(init_state,2);
         end
 
-        function curr_state = cycle(obj)
-            lsb = obj.state(obj.cap)
+        function [out, curr_state] = cycle(obj)
+            out = obj.state(obj.cap); % record lsb being output
             for i = obj.cap:-1:1
-                disp(["i: ", i])
                 if obj.lfsr_index(i) == obj.cap
-                    obj.state(i) = lsb
+                    obj.state(i) = out;
                 elseif ismember(obj.lfsr_index(i), obj.feedback_polymomial)
-                    obj.state(i) = bitxor(obj.state(i - 1), lsb)
+                    obj.state(i) = bitxor(obj.state(i - 1), out);
                 else
-                    obj.state(i) =  obj.state(i - 1)
+                    obj.state(i) =  obj.state(i - 1);
                 end
             end
-            % obj.state = state_copy
-            curr_state = obj.state
+            curr_state = obj.state;
         end
 
-        function state = cycle_multiple(obj, n)
+        function [out_stream, state] = cycle_multiple(obj, n)
+            out_stream = zeros(1,n);
             for i = 1:n
-                obj.cycle()
+                [out_stream(i)] = obj.cycle();
             end
-            state = obj.state
+            state = obj.state;
         end
 
         function curr_state = getState(obj)
-            curr_state = obj.state
+            curr_state = obj.state;
         end
     end
 
     methods (Access = private)
         function index = lfsr_index(obj, in)
-            index = obj.cap + 1 - in
+            index = obj.cap + 1 - in;
         end
     end
 
