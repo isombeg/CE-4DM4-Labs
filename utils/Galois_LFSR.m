@@ -1,4 +1,4 @@
-classdef Galois_LFSR
+classdef Galois_LFSR < handle
 
     properties %(Access = private)
         cap % bit capacity
@@ -13,21 +13,20 @@ classdef Galois_LFSR
             obj.cap = size(init_state,2)
         end
 
-        function cycle(obj)
+        function curr_state = cycle(obj)
             lsb = obj.state(obj.cap)
             for i = obj.cap:-1:1
-                disp(i)
+                disp(["i: ", i])
                 if obj.lfsr_index(i) == obj.cap
-                    disp('n1')
                     obj.state(i) = lsb
                 elseif ismember(obj.lfsr_index(i), obj.feedback_polymomial)
-                    disp('n2')
                     obj.state(i) = bitxor(obj.state(i - 1), lsb)
                 else
-                    disp('n3')
                     obj.state(i) =  obj.state(i - 1)
                 end
             end
+            % obj.state = state_copy
+            curr_state = obj.state
         end
 
         function state = cycle_multiple(obj, n)
